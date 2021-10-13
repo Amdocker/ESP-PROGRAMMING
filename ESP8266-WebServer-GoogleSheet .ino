@@ -16,7 +16,7 @@ const char* fingerprint = "11b660d85865e626ec67613a2af489e4a6deb344";
 const char* host = "script.google.com";
 
 const int httpsPort = 443;
-const char* ssid = "Orange-78b7e";
+const char* ssid = "";
 const char* password = "FSQ54Wxv";
 float humidite ;
 float temp ;
