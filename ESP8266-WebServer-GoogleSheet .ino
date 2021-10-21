@@ -7,17 +7,17 @@
 #include <ESP8266WiFi.h>
 
 
-String GAS_ID = "AKfycbwagOm99qeDxLk8VEYL7XCwp7Hfs7bOTT8Qx_5W";
+String GAS_ID = "";
 
 
-const char* fingerprint = "11b660d85865e626ec67613a2af489e4a6deb344";
+const char* fingerprint = "1q0agvIJpAO_qqoZwKlhEqymwYd0v-rppbq6P5xEseJA";
 
 
 const char* host = "script.google.com";
 
 const int httpsPort = 443;
 const char* ssid = "";
-const char* password = "FSQ54Wxv";
+const char* password = "";
 float humidite ;
 float temp ;
 
@@ -36,8 +36,8 @@ int Statebp = 0 ;
 
 String green_ledState = "" ;
 
-void sendData(int temp, int hum,String led, bool bp) {
-//gsclient.setInsecure();
+void sendData(float temp, float hum,String led, bool bp, float lum) {
+gsclient.setInsecure();
 Serial.print("connecting to ");
 Serial.println(host);
 if (!gsclient.connect(host, httpsPort)) {
@@ -45,14 +45,14 @@ Serial.println("connection failed");
 return;
 }
 
-String strTemp = String(temp, DEC);
-String strHum = String(hum, DEC);
+String strTemp = String(temp);
+String strHum = String(hum);
 String strStateled = led;
 String strStatebp = String(bp);
-
+String strLum = String(lum);
 Serial.println(strTemp);
 Serial.println(strHum);
-String url = "/macros/s/" + GAS_ID + "/exec?temperature=" + strTemp + "&humidity=" + strHum + "&statebp=" + strStatebp + "&stateled=" + strStateled ;
+String url = "/macros/s/" + GAS_ID + "/exec?temperature=" + strTemp + "&humidity=" + strHum + "&statebp=" + strStatebp + "&stateled=" + strStateled + "&lum=" + strLum ;
 Serial.print("requesting URL: ");
 Serial.println(url);
 gsclient.print(String("GET ") + url + " HTTP/1.1\r\n" +
@@ -119,8 +119,12 @@ void loop()
 
   float humidity = dht.getHumidity();
   float temperature = dht.getTemperature();
+  
+  float valeurLum = analogRead(A0);
+  valeurLum = ((valeurLum/1024)*100);
 
-  sendData(humidity,temperature,green_ledState,Statebp);
+
+  sendData(humidity,temperature,green_ledState,Statebp,valeurLum);
   
   Serial.print(humidity);
   Serial.print(temperature);
@@ -186,8 +190,8 @@ void loop()
   client.println(".button2 {background-color: #77878A;}</style></head>");
   
   // Web Page Heading
-  client.println("<body><h1>TP3 Système embarqué : Web Server ESP8266 </h1>");
-  client.println("<h1>avec stockage des données sur un fichier Google Sheet </h1>");
+  client.println("<body><h1>TP3 Système embarqué : Web Server ESP8266 avec stockage des données </h1>");
+  client.println("<h1> sur un fichier Google Sheet </h1>");
   
   // Display current state, and ON/OFF buttons for GPIO 5  
   client.println("<b><p>État de la LED :</b> " + green_ledState + "</p>");
@@ -219,6 +223,17 @@ void loop()
   client.print(F("<br><b>Valeur du bouton :</b>"));
   client.print("<br>");
   client.print(Statebp);
+
+  client.print("<br>");
+  
+  client.print(F("<br><b>Luminosité : </b>"));
+  client.print("<br>");
+  client.print(valeurLum);
+  client.println(" %");
+  
+  client.print("<br>");
+  client.print("<p> Vous pouvez acceder aux données enregistrées par le microcontroleur<br>");
+  client.print("sur le fichier Google Sheet en <a href=\"https://docs.google.com/spreadsheets/d/1q0agvIJpAO_qqoZwKlhEqymwYd0v-rppbq6P5xEseJA/edit?usp=sharing\" title=\"Ca vaut le détour\" target=\"_blank\" ><strong>cliquant ici.</strong></a>. </br>");
 
   // Permet de recharger la page toutes les 5000 ms
   client.print(F("<script>setTimeout(function(){window.location.reload(1);}, 5000);</script>"));
