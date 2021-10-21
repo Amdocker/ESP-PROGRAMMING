@@ -24,13 +24,17 @@ function doGet(e) {
           rowData[2] = value; //Value in column C
           result += ', Write on column 3';
           break;
-         case 'statebp': //Parameter
+        case 'statebp': //Parameter
           rowData[3] = value; //Value in column D
           result += ', Write on column 4';
           break; 
-         case 'stateled': //Parameter
+        case 'stateled': //Parameter
           rowData[4] = value; //Value in column E
           result += ', Write on column 5';
+          break;
+        case 'lum': //Parameter
+          rowData[5] = value; //Value in column F
+          result += ', Write on column 6';
           break; 
         default:
           result = "unsupported parameter";
@@ -48,5 +52,5 @@ function doGet(e) {
 * Remove leading and trailing single or double quotes
 */
 function stripQuotes( value ) {
-  return value.replace(/^["']|['"]|['"]|['"]$/g, "");
+  return value.replace(/^["']|['"]|['"]|['"]|['"]$/g, "");
 }
